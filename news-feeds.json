@@ -3,7 +3,7 @@
   "info": {
     "title": "RSS Feed Reader",
     "description": "Directly fetches RSS feeds from various news sources with time filtering",
-    "version": "v1.0.0"
+    "version": "v1.0.1"
   },
   "paths": {
     "/fetchFeeds": {

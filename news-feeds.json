@@ -1,0 +1,290 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Personal News Aggregator",
+    "description": "Fetches and aggregates news from predefined RSS feeds across various categories",
+    "version": "v1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://news-aggregator.example.com"
+    }
+  ],
+  "paths": {
+    "/news": {
+      "get": {
+        "description": "Fetch news from multiple RSS feeds by category",
+        "operationId": "GetNewsByCategory",
+        "parameters": [
+          {
+            "name": "categories",
+            "in": "query",
+            "description": "Comma-separated list of news categories to fetch",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["local", "tech", "world", "sports", "opinions"]
+              },
+              "default": ["local", "tech", "world", "sports", "opinions"]
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of items to return per category (default: 5)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved news feeds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "categories": {
+                      "type": "object",
+                      "properties": {
+                        "local": {
+                          "$ref": "#/components/schemas/CategoryNews"
+                        },
+                        "tech": {
+                          "$ref": "#/components/schemas/CategoryNews"
+                        },
+                        "world": {
+                          "$ref": "#/components/schemas/CategoryNews"
+                        },
+                        "sports": {
+                          "$ref": "#/components/schemas/CategoryNews"
+                        },
+                        "opinions": {
+                          "$ref": "#/components/schemas/CategoryNews"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters provided"
+          },
+          "500": {
+            "description": "Error fetching or parsing the news feeds"
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "description": "Get available news categories and their sources",
+        "operationId": "GetNewsCategories",
+        "responses": {
+          "200": {
+            "description": "List of available categories and their RSS sources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "categories": {
+                      "type": "object",
+                      "properties": {
+                        "local": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FeedSource"
+                          },
+                          "default": [
+                            {
+                              "name": "Reddit Melbourne",
+                              "url": "https://www.reddit.com/r/Melbourne/.rss",
+                              "description": "Melbourne local news and discussions"
+                            },
+                            {
+                              "name": "Reddit Australia",
+                              "url": "https://www.reddit.com/r/Australia/.rss",
+                              "description": "Australian news and discussions"
+                            }
+                          ]
+                        },
+                        "tech": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FeedSource"
+                          },
+                          "default": [
+                            {
+                              "name": "Reddit ChatGPT",
+                              "url": "https://www.reddit.com/r/ChatGPT/.rss"
+                            },
+                            {
+                              "name": "Reddit ClaudeAI",
+                              "url": "https://www.reddit.com/r/ClaudeAI/.rss"
+                            },
+                            {
+                              "name": "Reddit Cybersecurity",
+                              "url": "https://www.reddit.com/r/cybersecurity/.rss"
+                            },
+                            {
+                              "name": "Reddit Technology",
+                              "url": "https://www.reddit.com/r/technology/.rss"
+                            },
+                            {
+                              "name": "NYT Technology",
+                              "url": "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
+                            },
+                            {
+                              "name": "Reddit Line6 Helix",
+                              "url": "https://www.reddit.com/r/Line6Helix/.rss"
+                            },
+                            {
+                              "name": "NYT Personal Tech",
+                              "url": "https://rss.nytimes.com/services/xml/rss/nyt/PersonalTech.xml"
+                            }
+                          ]
+                        },
+                        "world": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FeedSource"
+                          },
+                          "default": [
+                            {
+                              "name": "NYT World News",
+                              "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
+                            },
+                            {
+                              "name": "NYT Asia Pacific",
+                              "url": "https://rss.nytimes.com/services/xml/rss/nyt/AsiaPacific.xml"
+                            }
+                          ]
+                        },
+                        "sports": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FeedSource"
+                          },
+                          "default": [
+                            {
+                              "name": "NYT Pro Basketball",
+                              "url": "https://rss.nytimes.com/services/xml/rss/nyt/ProBasketball.xml"
+                            },
+                            {
+                              "name": "ESPN Cricinfo",
+                              "url": "https://www.espncricinfo.com/rss/content/story/feeds/2.xml"
+                            }
+                          ]
+                        },
+                        "opinions": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FeedSource"
+                          },
+                          "default": [
+                            {
+                              "name": "NYT Bret Stephens",
+                              "url": "https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/bret-stephens/rss.xml"
+                            },
+                            {
+                              "name": "NYT Ezra Klein",
+                              "url": "https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/ezra-klein/rss.xml"
+                            },
+                            {
+                              "name": "NYT Paul Krugman",
+                              "url": "https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/paul-krugman/rss.xml"
+                            },
+                            {
+                              "name": "NYT Nicholas Kristof",
+                              "url": "https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/nicholas-kristof/rss.xml"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FeedSource": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": ["name", "url"]
+      },
+      "NewsItem": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string",
+            "format": "uri"
+          },
+          "source": {
+            "type": "string"
+          },
+          "pubDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["title", "link", "source", "pubDate"]
+      },
+      "CategoryNews": {
+        "type": "object",
+        "properties": {
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FeedSource"
+            }
+          },
+          "articles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NewsItem"
+            }
+          }
+        }
+      }
+    }
+  }
+}
